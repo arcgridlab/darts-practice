@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>ダーツ練習</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<!-- 上部メニュー -->
+<div class="nav">
+  <div>メニュー　</div>
+  <button data-target="hit">Hit率</button>
+  <button data-target="bull">InBull</button>
+  <button data-target="mark10">10Mark</button>
+  <button data-target="history">履歴</button>
+</div>
+<div class="row">
+    <div>日付:</div><div id="toDayPlayDate"></div>
+    <div> 時間:</div><div id="toDayTime"></div>
+    <div> 本数:</div><div id="toDayTotalthrow"></div>
+    <div> Hat数:</div><div id="toDayTotalHat"></div>
+  </div>
+</div>
+<!-- Hit率画面 -->
+<div id="hit" class="screen active">
+  <div class="container">
+    <h1>ヒット率計算</h1>
+    <!-- 入力行 -->
+    <div class="row">
+      <label style="flex: 0 0 10%;">Round</label>
+      <input type="number" id="hitRounds" value="8" min="8" style="flex: 0 0 10%;">
+      <label style="flex: 0 0 10%;">Target</label>
+      <select id="hitTarget"  style="flex: 0 0 25%;">
+        <option>BULL</option>
+        <option>20</option>
+        <option>19</option>
+        <option>18</option>
+        <option>17</option>
+        <option>16</option>
+        <option>15</option>
+        <option>Other</option>
+      </select>
+      <button onclick="hitStartGame()"  style="flex: 0 0 25%;">開始</button>
+    </div>
+    <br>
+    <!-- Hit ボタン -->
+    <div class="row">
+      <div >現在のラウンド: </div>
+      <div id="hitCurrentRound"></div>
+      <div >/</div>
+      <div id="hitTotalRound"></div>
+    </div>
+    <div class="row">
+      <button style="flex: 0 0 22%;" onclick="hitBtn(3)">3</button>
+      <button style="flex: 0 0 22%;" onclick="hitBtn(2)">2</button>
+      <button style="flex: 0 0 22%;" onclick="hitBtn(1)">1</button>
+      <button style="flex: 0 0 22%;" onclick="hitBtn(0)">0</button>
+    </div>
+    <br>
+    <!-- 直近の状況 -->
+    <div class="row">直近の状況</div>
+    <table>
+      <thead>
+        <tr>
+          <th>Round</th><th>投数</th><th>Hit数</th><th>Hit率</th><th>Hat数</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td id="hitRroundInfo">-</td>
+          <td id="hitTotalThrow">0</td>
+          <td id="hitHitCount">0</td>
+          <td id="hitRate">0%</td>
+          <td id="hitHatTrick">0</td>
+        </tr>
+      </tbody>
+    </table>
+    <br>
+    <!-- 前回の履歴 -->
+    <div class="row">練習履歴</div>
+    <div class="historyBox">
+      <div id="hitHistory">-</div>
+    </div>
+  </div>
+
+</div>
+
+<!--  BullPoint画面 -->
+<div id="bull" class="screen">
+  <div class="container">
+    <h1>InBull</h1>
+    <!-- 入力行 -->
+    <div class="row">
+      <label style="flex: 0 0 10%;">目標</label>
+      <input type="number" id="bullPoint" value="30" min="30" style="flex: 0 0 10%;">
+      <label style="flex: 0 0 10%;">Level</label>
+      <select id="bullLevel"  style="flex: 0 0 26%;">
+        <option>Easy</option>
+        <option>Med</option>
+        <option>Hard</option>
+      </select>
+      <button onclick="bullStartGame()"  style="flex: 0 0 22%;">開始</button>
+    </div>
+    <br>
+    <div class="row">
+      <div >現在のラウンド: </div>
+      <div id="bullCurrentRound"></div>
+      <div > R</div>
+    </div>
+    <!-- Hit ボタン -->
+    <table class="bullTable">
+      <thead>
+        <tr>
+          <th >本数</th><th>IN-BULL</th><th>BULL</th><th>その他</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><div id="bullCnt">-</div></td>
+          <td><button onclick="bullBtn(this)" class="bull-btn" data-type="inbull">0</button></td>
+          <td><button onclick="bullBtn(this)" class="bull-btn" data-type="bull">0</button></td>
+          <td><button onclick="bullBtn(this)" class="bull-btn" data-type="other">0</button></td>
+        </tr>
+      </tbody>
+    </table>
+    <br>
+    <!-- 直近の状況 -->
+    <div class="row">直近の状況</div>
+    <table>
+      <thead>
+        <tr>
+          <th>現在の点数</th><th>残り点数</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td id="bullCurrentPoint">0</td>
+          <td id="bullPointZan">0</td>
+        </tr>
+      </tbody>
+    </table>
+    <table>
+      <thead>
+        <tr>
+          <th>投数</th><th>Hit数</th><th>Hit率</th><th>Hat数</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td id="bullTotalThrow">0</td>
+          <td id="bullHitCount">0</td>
+          <td id="bullRate">0%</td>
+          <td id="bullHatTrick">0</td>
+        </tr>
+      </tbody>
+    </table>
+    <!-- 前回の履歴 -->
+    <div class="row">練習履歴</div>
+    <div class="historyBox">
+      <div id="bullHistory">-</div>
+    </div>
+  </div>
+</div>
+<!--  10Mark画面 -->
+<div id="mark10" class="screen">
+  <div class="container">
+    <div class="row">
+      <h1>クリケット:10マーク練習　　</h1>
+      <button onclick="markStartGame()">開始</button>
+    </div>
+    <div class="row">
+      <div >現在のラウンド: </div>
+      <div id="markCurrentRound"></div>
+      <div > R</div>
+    </div>
+    <table class="markTable">
+      <thead>
+        <tr>
+          <th >本数</th><th>Triple</th><th>Double</th><th>Single</th><th>Other</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><div id="markCnt">-</div></td>
+          <td><button onclick="MarkBtn(3)" class="mark-btn" >3</button></td>
+          <td><button onclick="MarkBtn(2)" class="mark-btn" >2</button></td>
+          <td><button onclick="MarkBtn(1)" class="mark-btn" >1</button></td>
+          <td><button onclick="MarkBtn(0)" class="mark-btn" >0</button></td>
+        </tr>
+      </tbody>
+    </table>
+    <br>
+    <div class="row">直近の状況</div>
+    <table>
+      <thead>
+        <tr>
+          <th>投数</th><th>スタッツ(BULL含む)</th><th>Hat数</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td id="markTotalThrow">0</td>
+          <td>
+            <div class="row">
+              <div id="markRate">0</div>(<div id="markFullRate">0</div>)
+            </div>
+          </td>
+          <td id="markHat">0</td>
+        </tr>
+      </tbody>
+    </table>
+    <table id="markTable"></table>
+    <!-- 前回の履歴 -->
+    <div class="row">練習履歴</div>
+    <div class="historyBox">
+      <div id="markHistory">-</div>
+    </div>
+  </div>
+</div>
+<!--  履歴画面 -->
+<div id="history" class="screen">
+  <div class="container">
+    <h1>練習履歴</h1>
+    <div class="historyBox">
+      <div class="row">
+        <div>日付:</div><div id="historyPlayDate"></div>
+        <div> 時間:</div><div id="historyPlayTime"></div>
+        <div> 本数:</div><div id="historyTotalthrow"></div>
+        <div> Hat数:</div><div id="historyTotalHat"></div>
+      </div>
+      <div id="totalHistory">-</div>
+    </div>
+  </div>
+</div>
+
+<!---------------------
+-- スクリプト処理
+------------------------->
+<script src="script.js"></script>
+</body>
+</html>
