@@ -50,7 +50,7 @@ h1 {
 .historyBox {
   font-family: "Noto Sans Mono CJK JP", monospace;
   white-space: pre;
-  font-size: 20px;
+  font-size: 16.5px;
 }
 /* 上部メニューボタン */
 .nav {
@@ -215,5 +215,6 @@ th {
   background-color: #ccc;
   color: #000;
 }
+
 
 
