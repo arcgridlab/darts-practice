@@ -78,9 +78,6 @@ function hitBtn(hit) {
     return;
   }else if (cRound = cTotalRounds) {
     setHitHistory();
-
-    
-    
     return;
   }else {
     //何もしない
@@ -368,7 +365,7 @@ function setMarkHistory() {
   outputElement("toDayTime" ,cntTime(toDayStartTime));
   outputElement("markCurrentRound" , "終了");
   //練習履歴
-  str = "10MarkCricket :";
+  str = "Cricket:10Mark,";
   str += (`投数[` + padStartUtil(3," ",getElementText("markTotalThrow")) +`]` )
   str += (`,     Stats[ ` + padStartUtil(3," ",getElementText("markRate")))
   str += (`( ` + padStartUtil(3," ",getElementText("markFullRate")) +  `)]`)
@@ -458,12 +455,85 @@ function setTotalHistory(str) {
   //練習履歴
   totalHistory.unshift(str);
   document.getElementById("totalHistory").innerText = totalHistory.join("\n");
+  //DBに登録
+  saveDbHistory();
+}
+//DBへの保存
+function saveDbHistory() {
+  const bdPlayDate = getElementText("historyPlayDate");
+  const dbPlayTime = getElementText("historyPlayTime");
+  const dbTotalthrow = getElementText("historyTotalthrow");
+  const dbTotalHat = getElementText("historyTotalHat");
+  const dbHitHistory = hitHistoryLog.join("\n");
+  const dbBullHistory = bullHistoryLog.join("\n");
+  const dbMarkHistory = markHistoryLog.join("\n");
+  const dbTotalHistory = totalHistory.join("\n");
+  saveResult({
+    date: bdPlayDate,
+    time: dbPlayTime,
+    count: dbTotalthrow,
+    hatCount: dbTotalHat,
+    hitHistoryLog: dbHitHistory,
+    bullHistoryLog: dbBullHistory,
+    markHistoryLog: dbMarkHistory,
+    totalhistory: dbTotalHistory
+  });
+}
+//////////////////////////////////////////////////
+//  DB処理
+//////////////////////////////////////////////////
+// データベースを開く
+let db;
+const request = indexedDB.open("DartsDB", 1);
+
+//DBの接続処理
+request.onsuccess = (event) => {
+  db = event.target.result;
+  loadTodayData(); // ページロード時に呼び出す
+};
+//DB定義
+request.onupgradeneeded = (event) => {
+  db = event.target.result;
+  // オブジェクトストア作成（主キーは autoIncrement）
+  const store = db.createObjectStore("history", { keyPath: "date" });
+};
+//DBのセーブ
+function saveResult(entry) {
+  const transaction = db.transaction(["history"], "readwrite");
+  const store = transaction.objectStore("history");
+  store.put(entry);  // put は同じキーがあれば上書き、なければ追加
 }
 
+//初回ロード
+function loadTodayData() {
+  const transaction = db.transaction(["history"], "readonly");
+  const store = transaction.objectStore("history");
+  //日付
+  let pDate = formatDate(new Date());
 
+  const request = store.get(pDate);
+  request.onsuccess = (event) => {
+    const data = event.target.result;
+    if (data) {
+      outputElement("toDayPlayDate" , data.date );
+      outputElement("toDayTime" , data.time );
+      outputElement("toDayTotalthrow" , data.count);
+      outputElement("toDayTotalHat" , data.hatCount);
 
+      outputElement("hitHistory" , data.hitHistoryLog);
+      outputElement("bullHistory" , data.bullHistoryLog);
+      outputElement("markHistory" , data.markHistoryLog);
 
-
-
-
-
+      outputElement("historyPlayDate" , data.date );
+      outputElement("historyPlayTime" , data.time );
+      outputElement("historyTotalthrow" , data.count);
+      outputElement("historyTotalHat" , data.hatCount);
+      outputElement("totalHistory" , data.totalhistory);
+      //
+      hitHistoryLog =data.hitHistoryLog.split("\n"); 
+      bullHistoryLog =data.bullHistoryLog.split("\n"); 
+      markHistoryLog =data.markHistoryLog.split("\n"); 
+      totalHistory =data.totalhistory.split("\n"); 
+    }
+  };
+}
