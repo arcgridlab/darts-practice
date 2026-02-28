@@ -460,10 +460,10 @@ function setTotalHistory(str) {
 }
 //DBへの保存
 function saveDbHistory() {
-  const bdPlayDate = getElementText("historyPlayDate");
-  const dbPlayTime = getElementText("historyPlayTime");
-  const dbTotalthrow = getElementText("historyTotalthrow");
-  const dbTotalHat = getElementText("historyTotalHat");
+  const bdPlayDate = getElementText("toDayPlayDate");
+  const dbPlayTime = getElementText("toDayTime");
+  const dbTotalthrow = getElementText("toDayTotalthrow");
+  const dbTotalHat = getElementText("toDayTotalHat");
   const dbHitHistory = hitHistoryLog.join("\n");
   const dbBullHistory = bullHistoryLog.join("\n");
   const dbMarkHistory = markHistoryLog.join("\n");
@@ -490,6 +490,7 @@ const request = indexedDB.open("DartsDB", 1);
 request.onsuccess = (event) => {
   db = event.target.result;
   loadTodayData(); // ページロード時に呼び出す
+   populateDateSelect();
 };
 //DB定義
 request.onupgradeneeded = (event) => {
@@ -539,3 +540,62 @@ function loadTodayData() {
     }
   };
 }
+
+function populateDateSelect() {
+  const transaction = db.transaction(["history"], "readonly");
+  const store = transaction.objectStore("history");
+  const request = store.getAllKeys();
+
+  request.onsuccess = () => {
+    const select = document.getElementById("historyDateSelect");
+    select.innerHTML = '<option value="">-- 選択 --</option>';
+    request.result.sort().forEach(date => {
+      const option = document.createElement("option");
+      option.value = date;
+      option.textContent = date;
+      select.appendChild(option);
+    });
+  };
+}
+document.getElementById("viewHistoryBtn").addEventListener("click", () => {
+  const date = document.getElementById("historyDateSelect").value;
+  if (!date) return alert("日付を選択してください");
+
+  const transaction = db.transaction(["history"], "readonly");
+  const store = transaction.objectStore("history");
+  const req = store.get(date);
+
+  req.onsuccess = () => {
+    const data = req.result;
+    if (data) {
+      outputElement("historyPlayDate" , data.date );
+      outputElement("historyPlayTime" , data.time );
+      outputElement("historyTotalthrow" , data.count);
+      outputElement("historyTotalHat" , data.hatCount);
+      outputElement("totalHistory" , data.totalhistory);
+    } else {
+      alert("データが存在しません");
+    }
+  };
+});
+// 選択日付を削除
+document.getElementById("deleteHistoryBtn").addEventListener("click", () => {
+  const date = document.getElementById("historyDateSelect").value;
+  if (!date) return alert("日付を選択してください");
+
+  if (!confirm(`${date} の履歴を削除しますか？`)) return;
+
+  const transaction = db.transaction(["history"], "readwrite");
+  const store = transaction.objectStore("history");
+  store.delete(date);
+
+  transaction.oncomplete = () => {
+    alert("削除完了");
+    populateDateSelect(); // 選択リスト更新
+    outputElement("historyPlayDate" , "" );
+    outputElement("historyPlayTime" , "" );
+    outputElement("historyTotalthrow" , "");
+    outputElement("historyTotalHat" , "");
+    outputElement("totalHistory" , "");
+  };
+});
