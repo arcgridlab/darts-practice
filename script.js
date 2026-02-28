@@ -534,6 +534,8 @@ function loadTodayData() {
       bullHistoryLog =data.bullHistoryLog.split("\n"); 
       markHistoryLog =data.markHistoryLog.split("\n"); 
       totalHistory =data.totalhistory.split("\n"); 
+    }else{
+      outputElement("toDayTime" , "未練習" );
     }
   };
 }
