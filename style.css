@@ -52,6 +52,16 @@ h1 {
   white-space: pre;
   font-size: 16.5px;
 }
+.historyRow {
+  font-family: "Noto Sans Mono CJK JP", monospace;
+  white-space: pre;
+  font-size: 16.5px;
+  display: flex;
+  gap: calc(var(--button-padding-x) * 0.6);
+  flex-wrap: nowrap;
+  overflow: hidden;
+}
+
 /* 上部メニューボタン */
 .nav {
   display: flex;
